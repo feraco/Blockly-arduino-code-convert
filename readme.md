@@ -20,8 +20,3 @@ To use the Blockly Arduino Sketch Generator, simply open the `index.html` file i
 ### Installation
 
 No installation is required. Just clone this repository or download the zip file and open the `index.html` file in your browser.
-
-```bash
-git clone https://github.com/your-github-username/blockly-arduino.git
-cd blockly-arduino
-open index.html # Use your browser or system-specific command to open the file
