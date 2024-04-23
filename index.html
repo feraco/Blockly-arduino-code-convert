@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html>
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Blockly Arduino Sketch Generator</title>
+      <script src="https://cdn.jsdelivr.net/npm/blockly/blockly.min.js"></script>
+      <style>
+        html, body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          display: flex;
+          flex-direction: column; /* Stack header and main content vertically */
+        }
+        #header {
+          width: 100%;
+          padding: 10px;
+          box-sizing: border-box;
+          background-color: #f1f1f1;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        #content {
+          display: flex; /* Align Blockly and code sections horizontally */
+          height: calc(100% - 40px); /* Adjust height accounting for header */
+          flex-direction: row; /* This ensures side-by-side layout */
+        }
+        #blocklyDiv {
+          width: 50%;
+          height: 100%;
+          resize: horizontal;
+          overflow: auto;
+        }
+        #codeDiv {
+          width: 50%;
+          height: 100%;
+          overflow: auto;
+          padding: 10px;
+          box-sizing: border-box;
+          background-color: #000;
+          color: #00ff00;
+        }
+      </style>
+    </head>
+<body>
+  <div id="header">
+    <h1>BOTS 300! Blockly Arduino Code Generator</h1>
+    <button onclick="downloadArduinoCode()" id="downloadButton">Download Arduino Code</button>
+  </div>
+  <div id="content"> <!-- Container for Blockly and code areas -->
+
+  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+  <xml id="toolbox" style="display: none">
+    <category name="Car Movement" colour="%{BKY_LOGIC_HUE}">
+      <block type="carcontrol_move_forward"></block>
+      <block type="carcontrol_move_backward"></block>
+      <block type="carcontrol_turn_left"></block>
+      <block type="carcontrol_turn_right"></block>
+      <block type="car_stop_time"></block>
+      <block type="car_look_left"></block>
+      <block type="car_look_right"></block>
+      <block type="car_center_servo"></block>
+    </category>
+    <category name="Car Sensors" colour="%{BKY_LOGIC_HUE}">
+      <block type="car_get_line_sensor_left"></block>
+      <block type="car_get_line_sensor_middle"></block>
+      <block type="car_get_line_sensor_right"></block>
+      <block type="car_get_left_distance"></block>
+      <block type="car_get_right_distance"></block>
+      <block type="car_get_center_distance"></block>
+      <block type="car_check_obstacle"></block>
+      <block type="car_get_distance_to_obstacle"></block>
+    </category>
+    <category name="Car Actions" colour="%{BKY_LOGIC_HUE}">
+      <block type="car_light_rgb_for_duration"></block>
+    </category>
+    <category name="Control" colour="%{BKY_CONTROL_HUE}">
+      <block type="controls_if"></block>
+      <block type="controls_whileUntil"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+    </category>
+    <category name="Utilities" colour="%{BKY_LOGIC_HUE}">
+      <block type="arduino_delay"></block>
+      <block type="arduino_serial_print"></block>
+    </category>
+    <category name="Values" colour="%{BKY_MATH_HUE}">
+      <block type="math_number"></block>
+    </category>
+  </xml>
+  <div id="codeDiv">
+    <pre id="arduinoCode"></pre>
+  </div>
+  <button onclick="downloadArduinoCode()">Download Arduino Code</button>
+  <script src="path/to/blockly_arduino.js"></script>
+  <script>
+   Blockly.Blocks['carcontrol_move_forward'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Move Forward at speed")
+        .appendField(new Blockly.FieldNumber(0, 0, 255), "SPEED")  // Allow numbers between 0 and 255
+        .appendField("for duration (ms)")
+        .appendField(new Blockly.FieldNumber(0, 0, Infinity), "TIME");  // Allow non-negative numbers
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['math_number'] = {
+    init: function() {
+      this.appendDummyInput()
+          .appendField(new Blockly.FieldNumber(0), 'NUM');
+      this.setOutput(true, 'Number');
+      this.setColour(230);
+      this.setTooltip('A number.');
+      this.setHelpUrl('https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks#number');
+    }
+  };
+
+
+    Blockly.Blocks['carcontrol_move_backward'] = {
+      
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Move Backward at speed")
+        .appendField(new Blockly.FieldNumber(0, 0, 255), "SPEED")  // Allow numbers between 0 and 255
+        .appendField("for duration (ms)")
+        .appendField(new Blockly.FieldNumber(0, 0, Infinity), "TIME");  // Allow non-negative numbers
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+    Blockly.Blocks['carcontrol_turn_left'] = {
+     
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Move Left at speed")
+        .appendField(new Blockly.FieldNumber(0, 0, 255), "SPEED")  // Allow numbers between 0 and 255
+        .appendField("for duration (ms)")
+        .appendField(new Blockly.FieldNumber(0, 0, Infinity), "TIME");  // Allow non-negative numbers
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+    // Light RGB For Duration
+    Blockly.Blocks['car_light_rgb_for_duration'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("light RGB LED")
+        .appendField(new Blockly.FieldColour("#ff0000"), "COLOR")
+        .appendField("for duration (ms)")
+        .appendField(new Blockly.FieldNumber(1000, 0, Infinity, 1), "DURATION");  // Allow users to input the duration directly
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(230);
+    this.setTooltip("Lights an RGB LED with a specified color for a set duration.");
+  }
+};
+
+
+   // Block Definition
+   Blockly.Blocks['logic_compare'] = {
+  init: function() {
+    this.appendValueInput("A")
+        .setCheck("Number");  // Ensure this input expects a number.
+    this.appendValueInput("B")
+        .setCheck("Number")  // Ensure this input expects a number.
+        .appendField(new Blockly.FieldDropdown([["=", "EQ"], ["≠", "NEQ"], ["<", "LT"], ["≤", "LTE"], [">", "GT"], ["≥", "GTE"]]), "OP");
+    this.setInputsInline(true);
+    this.setOutput(true, "Boolean");
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl(Blockly.Msg.LOGIC_COMPARE_HELPURL);
+  }
+};
+
+
+// Code Generation Function
+
+
+
+Blockly.Blocks['logic_operation'] = {
+  init: function() {
+    this.appendValueInput("A")
+        .setCheck("Boolean");
+    this.appendValueInput("B")
+        .setCheck("Boolean")
+        .appendField(new Blockly.FieldDropdown([["and", "AND"], ["or", "OR"]]), "OP");
+    this.setInputsInline(true);
+    this.setOutput(true, "Boolean");
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl(Blockly.Msg.LOGIC_OPERATION_HELPURL);
+  }
+};
+
+Blockly.Blocks['logic_negate'] = {
+  init: function() {
+    this.appendValueInput("BOOL")
+        .setCheck("Boolean")
+        .appendField("not");
+    this.setOutput(true, "Boolean");
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl(Blockly.Msg.LOGIC_NEGATE_HELPURL);
+  }
+};
+
+Blockly.Blocks['controls_if'] = {
+  init: function() {
+    this.appendValueInput("IF0")
+        .setCheck(null) // Allows any type, you can specify "Boolean" if you want strict type checking
+        .appendField("if");
+    this.appendStatementInput("DO0")
+        .appendField("do");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+  }
+};
+
+
+
+// Block Definition
+Blockly.Blocks['controls_whileUntil'] = {
+  init: function() {
+    this.appendValueInput('BOOL')
+      .setCheck('Boolean')
+      .appendField(new Blockly.FieldDropdown([[Blockly.Msg.CONTROLS_WHILEUNTIL_OPERATOR_WHILE, 'WHILE'], [Blockly.Msg.CONTROLS_WHILEUNTIL_OPERATOR_UNTIL, 'UNTIL']]), 'MODE')
+      .appendField(Blockly.Msg.CONTROLS_WHILEUNTIL_INPUT_DO);
+    this.appendStatementInput('DO')
+      .appendField(Blockly.Msg.CONTROLS_REPEAT_INPUT_DO);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(120);
+    this.setTooltip(Blockly.Msg.CONTROLS_WHILEUNTIL_TOOLTIP_WHILE);
+    this.setHelpUrl(Blockly.Msg.CONTROLS_WHILEUNTIL_HELPURL);
+  }
+};
+
+// Stop Time
+Blockly.Blocks['car_stop_time'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("stop car for duration (ms)")
+        .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "DURATION");  // Users can enter duration here
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(160);
+    this.setTooltip("Places the car in standby for a specified duration.");
+  }
+};
+
+
+
+    Blockly.Blocks['arduino_serial_print'] = {
+  init: function() {
+    this.appendValueInput("TEXT")
+        .setCheck(String)
+        .appendField("serial print");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(160);
+    this.setTooltip("Prints data to the serial port as human-readable ASCII text.");
+    this.setHelpUrl("https://www.arduino.cc/reference/en/language/functions/communication/serial/print/");
+  }
+};
+Blockly.Blocks['car_get_distance_to_obstacle'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get distance to obstacle");
+    this.setOutput(true, "Number"); // Ensures this block returns a value
+    this.setColour(160);
+    this.setTooltip("Returns the distance to the nearest obstacle in centimeters.");
+  }
+};
+
+
+    Blockly.Blocks['carcontrol_turn_right'] = {
+      
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Move right at speed")
+        .appendField(new Blockly.FieldNumber(0, 0, 255), "SPEED")  // Allow numbers between 0 and 255
+        .appendField("for duration (ms)")
+        .appendField(new Blockly.FieldNumber(0, 0, Infinity), "TIME");  // Allow non-negative numbers
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+    Blockly.Blocks['car_check_obstacle'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("check obstacle in front");
+    this.setOutput(true, "Boolean");
+    this.setColour(160);
+    this.setTooltip("Checks if there is an obstacle in front of the car.");
+  }
+};
+Blockly.Blocks['car_look_left'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("turn sensors left");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(210);
+    this.setTooltip("Turns the sensor left.");
+  }
+};
+// Block Definition
+Blockly.Blocks['logic_operation'] = {
+  init: function() {
+    this.appendValueInput("A")
+      .setCheck("Boolean");
+    this.appendValueInput("B")
+      .setCheck("Boolean")
+      .appendField(new Blockly.FieldDropdown([["and", "AND"], ["or", "OR"]]), "OP");
+    this.setInputsInline(true);
+    this.setOutput(true, "Boolean");
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl(Blockly.Msg.LOGIC_OPERATION_HELPURL);
+  }
+};
+
+// Code Generation Function
+
+
+// Get Line Sensor Left
+Blockly.Blocks['car_get_line_sensor_left'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get left line sensor reading");
+    this.setOutput(true, "Number"); // Ensure this block outputs a number
+    this.setColour(260);
+    this.setTooltip("Retrieves line sensor reading from the left sensor.");
+  }
+};
+
+
+// Get Line Sensor Middle
+Blockly.Blocks['car_get_line_sensor_middle'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get middle line sensor reading");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Retrieves line sensor reading from the middle sensor.");
+  }
+};
+// Get Left Distance
+Blockly.Blocks['car_get_left_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get left distance");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Gets distance reading from the left sensor.");
+  }
+};
+// Block Definition
+
+
+
+// Get Right Distance
+Blockly.Blocks['car_get_right_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get right distance");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Gets distance reading from the right sensor.");
+  }
+};
+
+// Get Center Distance
+Blockly.Blocks['car_get_center_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get center distance");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Gets distance reading from the center sensor.");
+  }
+};
+// Block Definition
+Blockly.Blocks['logic_negate'] = {
+  init: function() {
+    this.appendValueInput("BOOL")
+      .setCheck("Boolean")
+      .appendField("not");
+    this.setOutput(true, "Boolean");
+    this.setColour(120);
+    this.setTooltip("");
+    this.setHelpUrl(Blockly.Msg.LOGIC_NEGATE_HELPURL);
+  }
+};
+
+
+// Get Line Sensor Right
+
+
+
+// Look Right
+Blockly.Blocks['car_look_right'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("turn sensors right");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(210);
+    this.setTooltip("Turns the sensor right.");
+  }
+};
+
+
+// Center Servo
+Blockly.Blocks['car_center_servo'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("center sensors");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(210);
+    this.setTooltip("Centers the sensor.");
+  }
+};
+
+
+Blockly.Blocks['arduino_delay'] = {
+  init: function() {
+    this.appendValueInput("DELAY_TIME")
+        .setCheck("Number")
+        .appendField("delay");
+    this.appendDummyInput()
+        .appendField("milliseconds");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+ this.setTooltip("Pauses the program for the amount of time (in milliseconds) specified as parameter.");
+ this.setHelpUrl("https://www.arduino.cc/reference/en/language/functions/time/delay/");
+  }
+};
+
+
+if (typeof Blockly.Arduino === 'undefined') {
+      Blockly.Arduino = {};
+    }
+
+    Blockly.Arduino['carcontrol_move_forward'] = function(block) {
+  var speed = block.getFieldValue('SPEED');
+  var time = block.getFieldValue('TIME');
+  var code = 'car.moveForward(' + speed + ', ' + time + ');\n';
+
+  // Retain the logic for subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+
+
+
+Blockly.Arduino['logic_operation'] = function(block) {
+  var operator = block.getFieldValue('OP') === 'AND' ? '&&' : '||';
+  var operandA = Blockly.Arduino.valueToCode(block, 'A', Blockly.Arduino.ORDER_ATOMIC) || 'false';
+  var operandB = Blockly.Arduino.valueToCode(block, 'B', Blockly.Arduino.ORDER_ATOMIC) || 'false';
+
+  var code = operandA + ' ' + operator + ' ' + operandB;
+
+  // Handle subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return [code, Blockly.Arduino.ORDER_LOGICAL_AND];
+};
+
+
+// Code Generation Function
+
+Blockly.Arduino['carcontrol_move_backward'] = function(block) {
+  var speed = block.getFieldValue('SPEED');
+  var time = block.getFieldValue('TIME');
+  var code = 'car.moveBackward(' + speed + ', ' + time + ');\n';
+
+  // Retain the logic for subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+
+// Code Generation Function
+Blockly.Arduino['controls_whileUntil'] = function(block) {
+  var until = block.getFieldValue('MODE') === 'UNTIL';
+  var conditionCode = Blockly.Arduino.valueToCode(block, 'BOOL', Blockly.Arduino.ORDER_NONE) || 'false';
+  var branchCode = Blockly.Arduino.statementToCode(block, 'DO');
+  if (until) {
+    conditionCode = '!' + conditionCode;
+  }
+  var code = 'while (' + conditionCode + ') {\n' + branchCode + '}\n';
+
+  // Handle subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+
+// Code Generation Function
+Blockly.Arduino['logic_negate'] = function(block) {
+  var boolValue = Blockly.Arduino.valueToCode(block, 'BOOL', Blockly.Arduino.ORDER_LOGICAL_NOT) || 'true';
+  var code = '!' + boolValue;
+
+  // Handle subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return [code, Blockly.Arduino.ORDER_LOGICAL_NOT];
+};
+Blockly.Arduino['logic_compare'] = function(block) {
+    var operator = block.getFieldValue('OP');
+    var operandA = Blockly.Arduino.valueToCode(block, 'A', Blockly.Arduino.ORDER_ATOMIC) || '0';
+    var operandB = Blockly.Arduino.valueToCode(block, 'B', Blockly.Arduino.ORDER_ATOMIC) || '0';
+
+    var opMap = {
+        "EQ": "==",
+        "NEQ": "!=",
+        "LT": "<",
+        "LTE": "<=",
+        "GT": ">",
+        "GTE": ">="
+    };
+    var opSymbol = opMap[operator] || "==";
+
+    var code = '(' + operandA + ' ' + opSymbol + ' ' + operandB + ')';
+
+    // Handle subsequent blocks, but only if this is used in a statement context, not an expression context
+    var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+    if (nextBlock && block.nextConnection.isConnected()) {
+        code += ' {\n' + Blockly.Arduino.statementToCode(block, 'DO') + '\n}';
+        code += Blockly.Arduino[nextBlock.type](nextBlock);
+    }
+
+    return [code, Blockly.Arduino.ORDER_RELATIONAL];
+};
+
+Blockly.Arduino['carcontrol_turn_left'] = function(block) {
+  var speed = block.getFieldValue('SPEED');
+  var time = block.getFieldValue('TIME');
+  var code = 'car.turnLeft(' + speed + ', ' + time + ');\n';
+
+  // Retain the logic for subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+  
+Blockly.Arduino['car_get_distance_to_obstacle'] = function(block) {
+  // This block returns a value, so it should be in an expression format
+  var code = 'car.getDistanceToObstacle()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino['carcontrol_turn_right'] = function(block) {
+  var speed = block.getFieldValue('SPEED');
+  var time = block.getFieldValue('TIME');
+  var code = 'car.turnRight(' + speed + ', ' + time + ');\n';
+
+  // Retain the logic for subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+Blockly.Arduino['car_get_line_sensor_left'] = function(block) {
+  // This block returns a value, so it should be in an expression format
+  var code = 'car.getLineSensorLeft()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino['car_get_line_sensor_middle'] = function(block) {
+  // This block returns a value, so it should be in an expression format
+  var code = 'car.getLineSensorMiddle()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino['car_get_line_sensor_right'] = function(block) {
+  // This block returns a value, so it should be in an expression format
+  var code = 'car.getLineSensorRight()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino['car_get_left_distance'] = function(block) {
+  // This block returns a value, so it should be in an expression format
+  var code = 'car.getLeftDistance()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino['car_get_right_distance'] = function(block) {
+  // This block returns a value, so it should be in an expression format
+  var code = 'car.getRightDistance()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino['car_get_center_distance'] = function(block) {
+  // This block returns a value, so it should be in an expression format
+  var code = 'car.getCenterDistance()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+
+Blockly.Arduino['car_stop_time'] = function(block) {
+  // Fetch the duration directly from the input field
+  var duration = block.getFieldValue('DURATION');
+
+  // Construct the Arduino code with the fetched duration
+  var code = 'car.stopTime(' + duration + ');\n';
+
+  // Log the generated code for debugging purposes
+  console.log('Generated code for car_stop_time:', code);
+
+  // Append code from subsequent blocks, if any
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+
+
+
+Blockly.Arduino['car_look_right'] = function(block) {
+  var code = 'car.lookRight();\n';
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+  return code;
+};
+
+Blockly.Arduino['car_look_left'] = function(block) {
+  var code = 'car.lookLeft();\n';
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+  return code;
+};
+
+Blockly.Arduino['car_center_servo'] = function(block) {
+  var code = 'car.centerServo();\n';
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+  return code;
+};
+if (typeof Blockly.Arduino === 'undefined') {
+  Blockly.Arduino = {};
+}
+
+// Ensure valueToCode is defined
+Blockly.Arduino.valueToCode = function(block, fieldName, order) {
+  if (!block) {
+    return '';
+  }
+  var targetBlock = block.getInputTargetBlock(fieldName);
+  if (!targetBlock) {
+    return '';
+  }
+
+  if (!this[targetBlock.type]) {
+    console.error("Missing code generation function for block type:", targetBlock.type);
+    return '';
+  }
+
+  var code = this[targetBlock.type](targetBlock);
+  if (code instanceof Array) {
+    code = code[0];
+  }
+
+  if (code && block.workspace.options.parenthesisForced && order && this.ORDER_ATOMIC < order) {
+    code = '(' + code + ')';
+  }
+  return code || '';
+};
+Blockly.Arduino['missing_block_type'] = function(block) {
+  // Generate and return the code string for the block.
+  return '';
+};
+
+Blockly.Arduino['car_light_rgb_for_duration'] = function(block) {
+  var color = block.getFieldValue('COLOR');
+  var duration = block.getFieldValue('DURATION');
+  var code = 'car.lightRGBForDuration(' + color + ', ' + duration + ');\n';
+
+  // Handle subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+
+
+Blockly.Arduino['arduino_serial_print'] = function(block) {
+  var text = Blockly.Arduino.valueToCode(block, 'TEXT', Blockly.Arduino.ORDER_NONE) || '""';
+  var code = 'Serial.print(' + text + ');\n';
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+  return code;
+};
+
+Blockly.Arduino['arduino_delay'] = function(block) {
+  var delay_time = Blockly.Arduino.valueToCode(block, 'DELAY_TIME', Blockly.Arduino.ORDER_ATOMIC);
+  var code = 'delay(' + delay_time + ');\n';
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+  return code;
+};
+
+// For blocks returning values, like car_get_distance_to_obstacle, you generally do not need to append next block code
+// because they are typically used as input values for other blocks, not as standalone statements.
+// Adjust similar blocks accordingly.
+
+
+
+Blockly.Blocks['car_get_line_sensor_middle'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get middle line sensor reading");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Retrieves line sensor reading from the middle sensor.");
+  }
+};
+
+Blockly.Blocks['car_get_line_sensor_right'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get right line sensor reading");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Retrieves line sensor reading from the right sensor.");
+  }
+};
+
+Blockly.Blocks['car_get_left_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get left distance");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Gets distance reading from the left sensor.");
+  }
+};
+
+Blockly.Blocks['car_get_right_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get right distance");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Gets distance reading from the right sensor.");
+  }
+};
+
+Blockly.Blocks['car_get_center_distance'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("get center distance");
+    this.setOutput(true, "Number");
+    this.setColour(260);
+    this.setTooltip("Gets distance reading from the center sensor.");
+  }
+};
+
+
+   
+    
+
+Blockly.Arduino.statementToCode = function(block, inputName) {
+  var targetBlock = block.getInputTargetBlock(inputName);
+  var code = '';
+  while (targetBlock) {
+    var generatedCode = this[targetBlock.type](targetBlock);
+    if (generatedCode) {
+      code += generatedCode;
+    }
+    targetBlock = targetBlock.nextConnection && targetBlock.nextConnection.targetBlock();
+  }
+  return code;
+};
+
+Blockly.Arduino['controls_if'] = function(block) {
+  var conditionCode = Blockly.Arduino.valueToCode(block, 'IF0', Blockly.Arduino.ORDER_NONE) || 'false';
+  var branchCode = Blockly.Arduino.statementToCode(block, 'DO0');
+  var code = 'if (' + conditionCode + ') {\n' + branchCode + '}\n';
+
+  // Handle subsequent blocks
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (nextBlock) {
+    code += Blockly.Arduino[nextBlock.type](nextBlock);
+  }
+
+  return code;
+};
+
+
+
+
+// Static part of the code
+Blockly.Arduino.staticHeaderCode = function() {
+  return `#include <CarControl.h>
+#include <Ultrasonic.h>
+#include <FastLED.h>
+#include <Servo.h>
+#include "MPU6050.h"
+
+#define CLAWSERVOPIN 11
+#define SENSORSERVOPIN 10
+#define RIGHT_SENSOR_PIN A1
+#define MIDDLE_SENSOR_PIN A2
+#define LEFT_SENSOR_PIN A3
+
+CarControl car(5, 6, 7, 8, 3, 2);
+
+void setup() {
+  Serial.begin(9600);
+  car.setup();
+  car.attachClaw(CLAWSERVOPIN);
+  car.attachSensorServo(SENSORSERVOPIN);
+  car.initLineSensors();
+  car.stopMotors();
+}
+`;
+};
+
+// Modify the workspaceToCode function to prepend the static header and wrap the dynamic code in the loop function
+Blockly.Arduino.workspaceToCode = function(workspace) {
+  var code = Blockly.Arduino.staticHeaderCode(); // Add the static header and setup
+  code += "\nvoid loop() {\n";  // Start of the loop function
+
+  var blocks = workspace.getTopBlocks(true);
+  for (var i = 0, block; block = blocks[i]; i++) {
+    var line = Blockly.Arduino[block.type](block);
+    if (line) {
+      code += "  " + line;  // Indent for readability
+    }
+  }
+
+  code += "}\n";  // End of the loop function
+  return code;
+};
+
+
+
+
+
+
+
+
+    // Update code when the workspace changes
+
+    // Function to download the Arduino code
+    function downloadArduinoCode() {
+      var code = Blockly.Arduino.workspaceToCode(workspace);
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(code));
+      element.setAttribute('download', "arduino_code.ino");
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    var workspace = Blockly.inject('blocklyDiv', {
+      toolbox: document.getElementById('toolbox'),
+      grid: {
+          spacing: 20,
+          length: 3,
+          colour: '#ccc',
+          snap: true
+      },
+      trashcan: true,
+      theme: Blockly.Themes.Dark
+    });
+
+    // Update the displayed Arduino code
+    function updateArduinoCode() {
+      var code = Blockly.Arduino.workspaceToCode(workspace);
+      document.getElementById('arduinoCode').textContent = code;
+    }
+
+    // Connect the update function to workspace changes
+    workspace.addChangeListener(updateArduinoCode);
+
+    // Initial update and workspace resize
+    updateArduinoCode();
+    resizeBlocklyWorkspace();
+</script>
+</body>
+</html>
